@@ -1,0 +1,90 @@
+## User interface of the Connect Four Game
+###### includes all the functions that are used in the user interfaces of
+###### both the console-only version and networked version of the game
+
+import collections
+import connectfour
+
+
+
+def print_gameboard(gameState):
+    '''
+    Prints an updated version of the gameboard according to the current gameState
+    '''
+    print('{:>4}{:>4}{:>4}{:>4}{:>4}{:>4}{:>4}'.format('1', '2', '3', '4', '5', '6', '7'))
+
+    for i in range(len(gameState.board[0])): #row
+        mystring = ''
+        for j in range(len(gameState.board)): #col
+            if ( gameState.board[j][i] == ' '):
+                mystring = mystring + '   .'
+            else:
+                mystring = mystring + '   ' + gameState.board[j][i]
+        print(mystring)
+
+        
+
+def game_state():
+    '''
+    A ConnectFourGameState representing a brand new game in which no moves
+    have been made yet.
+    '''
+    gameState = connectfour.new_game_state()
+    return gameState
+
+
+MENU = """
+Do you want to drop a piece or pop a piece?
+  d: Drop
+  p: Pop
+"""
+
+
+def user_move(gameState):
+    '''
+    Asks the user what move he or she would like to make next. Returns the current
+    gameState and the move the previous person made
+    '''
+    
+    servers_move = []
+    move = ''
+
+    print("\nIt is Player", gameState.turn + "'s turn.")
+
+    response = input(MENU)
+    if response.strip() == 'd':
+        cond = True
+        while cond:
+            play = input('In which column would you like to drop your piece? ')
+            try:
+                play = int(play)
+                gameState = connectfour.drop_piece(gameState, play-1)
+                move = 'DROP ' + str(play)
+                print_gameboard(gameState)
+                print('\n---------------------------------\n')                 
+                                              
+                cond = False 
+            except:
+                print("***** Invalid Input *****")
+    elif response.strip() == 'p':
+        cond = True
+        while cond:
+            play = input('In which column would you like to pop your piece? ')
+            if play.strip() == 'STOP':
+                cond = False
+            else:
+                try:
+                    play = int(play)
+                    gameState = connectfour.pop_piece(gameState, play-1)
+                    move = 'POP ' + str(play)
+                    print_gameboard(gameState)
+                    print('\n---------------------------------\n')
+
+                    cond = False
+                except:
+                    print("***** Invalid Input. Remember: you can pop only pieces that are yours *****")
+                    print("***** If you don't want to pop anymore, type 'STOP' *****")
+    else:
+        print('***** Invalid Menu Option *****')
+
+    return gameState, move
